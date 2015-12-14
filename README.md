@@ -10,6 +10,9 @@ file `conf/database.conf.example` to `conf/database.conf`. There are 2 examples 
 PostgreSQL database and for SQLite database. If you want to use another database, please provide Slick 3.0.0 compliant
 configuration (see [Slick's Configuration Guide](http://slick.typesafe.com/doc/3.0.0/database.html#databaseconfig)).
 
+Please remember that if you want to use another database, you need to add its specific JDBC Driver as library 
+dependency in file `build.sbt`.
+
 # How to run
 
 Clone the repository, please configure it (see the above section), go to its root directory and simply type:

@@ -16,7 +16,10 @@ libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
-  specs2 % Test
+  specs2 % Test,
+  "postgresql" % "postgresql" % "9.1-901.jdbc4",
+  "org.xerial" % "sqlite-jdbc" % "3.8.11.1",
+  "com.zaxxer" % "HikariCP-java6" % "2.3.3"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
