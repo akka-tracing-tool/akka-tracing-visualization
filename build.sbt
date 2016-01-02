@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   specs2 % Test,
-  "postgresql" % "postgresql" % "9.1-901.jdbc4",
+  "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
   "org.xerial" % "sqlite-jdbc" % "3.8.11.1",
   "com.zaxxer" % "HikariCP-java6" % "2.3.3"
 )
