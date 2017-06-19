@@ -1,7 +1,7 @@
 import com.typesafe.config.ConfigFactory
-import pl.edu.agh.iet.akka_tracing.database.DatabaseUtils
+import pl.edu.agh.iet.akka_tracing.utils.DatabaseUtils
 import play.api.libs.concurrent.Execution.Implicits._
-import play.api.{Application, GlobalSettings}
+import play.api.{ Application, GlobalSettings }
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

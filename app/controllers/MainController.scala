@@ -1,29 +1,25 @@
 package controllers
 
-import com.typesafe.config.ConfigFactory
-import pl.edu.agh.iet.akka_tracing.database.DatabaseUtils
+import com.google.inject.Inject
+import org.json4s.DefaultFormats
+import org.json4s.ext.JavaTypesSerializers
+import org.json4s.native.Serialization._
+import pl.edu.agh.iet.akka_tracing.visualization.data.DataSource
 import play.api.mvc._
 
-class MainController extends Controller {
-  val databaseUtils = new DatabaseUtils(ConfigFactory.load)
-  val dc = databaseUtils.getDatabaseConfig
+class MainController @Inject() (dataSource: DataSource) extends Controller {
 
-  import dc.driver.api._
-  import databaseUtils._
+  import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-  val db = dc.db
-  val messages = TableQuery[CollectorDBMessages]
-  val relation = TableQuery[CollectorDBMessagesRelations]
+  private implicit val formats = DefaultFormats ++ JavaTypesSerializers.all
 
-  def index = Action.async {
-    import play.api.libs.concurrent.Execution.Implicits._
-
-    val messagesListFuture = db.run(messages.to[List].result)
-    val relationListFuture = db.run(relation.to[List].result)
+  def index: Action[AnyContent] = Action.async {
+    val messagesListFuture = dataSource.getMessages
+    val relationListFuture = dataSource.getRelations
 
     for {
       messagesList <- messagesListFuture
       relationList <- relationListFuture
-    } yield Ok(views.html.index(messagesList)(relationList))
+    } yield Ok(views.html.index(messagesList.map(write(_)))(relationList.map(write(_))))
   }
 }

@@ -1,5 +1,5 @@
 //Postgres configuration
-driver = "slick.driver.PostgresDriver$"
+profile = "slick.jdbc.PostgresProfile$"
 db {
   connectionPool = disabled
   driver = "org.postgresql.Driver"
@@ -10,9 +10,8 @@ db {
 }
 
 //SQLite configuration
-driver = "slick.driver.SQLiteDriver$"
+profile = "slick.jdbc.SQLiteProfile$"
 db {
   driver = "org.sqlite.JDBC"
   url = "jdbc:sqlite:<<FILE>>"
 }
-

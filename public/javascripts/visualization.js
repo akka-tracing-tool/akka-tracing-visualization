@@ -4,20 +4,26 @@ $(document).ready(function () {
     var allMessages = {};
     var allNodes = {};
     var dfsStartingNodes = [];
+    var i;
 
-    for (var i = 0; i < relations.length; i++) {
-        if (relations[i]["id1"] == "00000000-0000-0000-0000-000000000000") {
+    for (i = 0; i < relations.length; i++) {
+        if (relations[i]["id1"] === "00000000-0000-0000-0000-000000000000") {
             dfsStartingNodes.push(relations[i]["id2"].toString());
         }
     }
 
-    for (var i = 0; i < messages.length; i++) {
+    for (i = 0; i < messages.length; i++) {
         var message = messages[i];
         message["visited"] = false;
         allMessages[messages[i]["id"].toString()] = message;
     }
 
-    allMessages["00000000-0000-0000-0000-000000000000"] = {"id": -1, "sender": "start", "receiver": null, "visited": false};
+    allMessages["00000000-0000-0000-0000-000000000000"] = {
+        "id": -1,
+        "sender": "start",
+        "receiver": null,
+        "visited": false
+    };
 
     var edgesNum = 0;
 
@@ -58,12 +64,13 @@ $(document).ready(function () {
             "target": receiverName,
             "color": "#000",
             "type": 'curvedArrow',
-            "size": 5
+            "size": 5,
+            "label": JSON.stringify(node.contents || '', null, 4)
         });
 
         for (var i = 0; i < relations.length; i++) {
             var newNode = allMessages[relations[i]["id2"]];
-            if (relations[i]["id1"] == node["id"] && !newNode["visited"]) {
+            if (relations[i]["id1"] === node["id"] && !newNode["visited"]) {
                 dfs(newNode, trace);
             }
         }
@@ -71,7 +78,7 @@ $(document).ready(function () {
 
     var traceNum = 0;
 
-    for (var i in dfsStartingNodes) {
+    for (i in dfsStartingNodes) {
         var n = dfsStartingNodes[i];
         var receiver = allMessages[n]["sender"];
         allMessages["00000000-0000-0000-0000-000000000000"]["receiver"] = receiver;
@@ -101,13 +108,11 @@ $(document).ready(function () {
             "target": receiverName,
             "color": "#000",
             "type": 'curvedArrow',
-            "size": 5
+            "size": 5,
+            "label": JSON.stringify(allMessages[n].contents || '', null, 4)
         });
         dfs(allMessages[n], traceNum++);
     }
-
-    console.log(nodes);
-    console.log(edges);
 
     var s = new sigma({
         renderer: {
@@ -128,13 +133,39 @@ $(document).ready(function () {
             minArrowSize: 10,
             labelThreshold: 16,
             defaultLabelSize: 20,
-            labelSizeRatio: 1.2
+            labelSizeRatio: 1.2,
+            edgeLabelThreshold: 5,
+            defaultEdgeLabelSize: 20,
+            edgeLabelSizePowRatio: 1.2
         }
     });
 
-    s.startForceAtlas2({"adjustSizes": true, "edgeWeightInfluence": 0, "gravity": 1, "strongGravityMode": true});
+    s.startForceAtlas2({
+        adjustSizes: true,
+        edgeWeightInfluence: 0,
+        gravity: 1,
+        strongGravityMode: true,
+        barnesHutOptimize: false
+    });
 
     setTimeout(function () {
         s.stopForceAtlas2();
-    }, 5000);
+
+        s.settings({
+            enableEdgeHovering: true
+        });
+
+        s.refresh();
+
+        s.bind('overEdge', function (event) {
+            var edge = event.data.edge;
+            if (edge.label) {
+                $('#message-contents').html(edge.label);
+            }
+        });
+
+        s.bind('outEdge', function () {
+            $('#message-contents').html('');
+        });
+    }, 10000);
 });
